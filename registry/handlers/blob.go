@@ -52,12 +52,8 @@ func (bh *blobHandler) GetBlob(w http.ResponseWriter, r *http.Request) {
 	context.GetLogger(bh).Debug("GetBlob")
 	blobs := bh.Repository.Blobs(bh)
 	desc, err := blobs.Stat(bh, bh.Digest)
-	if err != nil {
-		if err == distribution.ErrBlobUnknown {
-			bh.Errors = append(bh.Errors, v2.ErrorCodeBlobUnknown.WithDetail(bh.Digest))
-		} else {
-			bh.Errors = append(bh.Errors, errcode.ErrorCodeUnknown.WithDetail(err))
-		}
+	if err != nil && err != distribution.ErrBlobUnknown {
+		bh.Errors = append(bh.Errors, errcode.ErrorCodeUnknown.WithDetail(err))
 		return
 	}
 
